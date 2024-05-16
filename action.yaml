@@ -1,0 +1,19 @@
+name: Install μpkg
+description: Install μpkg
+inputs:
+  version:
+    description: The version of μpkg to install
+    default: latest
+    required: false
+runs:
+  using: composite
+  steps:
+  - name: Install μpkg
+    shell: bash
+    run: |
+      if [[ -z $INSTALL_PREFIX ]]; then
+        INSTALL_PREFIX=$HOME/.local
+        [[ $EUID != 0 ]] || INSTALL_PREFIX=/usr/local
+      fi
+      wget -qO- https://github.com/orbit-online/upkg/releases/${{ inputs.version != 'latest' && 'download/' || '' }}${{ inputs.version }}/${{ inputs.version == 'latest' && 'download/' || '' }}upkg-install.tar.gz | \
+        tar -xzC "$INSTALL_PREFIX"
