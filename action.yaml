@@ -5,6 +5,18 @@ inputs:
     description: The version of μpkg to install
     default: latest
     required: false
+  install-prefix:
+    description: Where to install μpkg
+    default: ""
+    required: false
+  install-dependencies:
+    description: Whether to install dependencies in the current working-directory
+    default: 'true'
+    required: false
+  working-directory:
+    description: "The working directory to change to before installing dependencies"
+    default: "."
+    required: false
 runs:
   using: composite
   steps:
@@ -17,3 +29,10 @@ runs:
       fi
       wget -qO- https://github.com/orbit-online/upkg/releases/${{ inputs.version != 'latest' && 'download/' || '' }}${{ inputs.version }}/${{ inputs.version == 'latest' && 'download/' || '' }}upkg-install.tar.gz | \
         tar -xzC "$INSTALL_PREFIX"
+    env:
+      INSTALL_PREFIX: ${{ inputs.install-prefix }}
+  - name: Install dependencies
+    shell: bash
+    run: upkg install
+    working-directory: ${{ inputs.working-directory }}
+    if: ${{ inputs.install-dependencies == 'true' }}
