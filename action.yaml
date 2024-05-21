@@ -44,6 +44,6 @@ runs:
       INSTALL_PREFIX: ${{ inputs.install-prefix }}
   - name: Install dependencies
     shell: bash
-    run: upkg install
+    run: ${{ steps.install.outputs.install-prefix }}/bin/upkg install
     working-directory: ${{ inputs.working-directory }}
     if: ${{ inputs.install-dependencies == 'true' }}
