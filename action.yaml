@@ -50,3 +50,9 @@ runs:
       fi
     working-directory: ${{ inputs.working-directory }}
     if: ${{ inputs.install-dependencies == '' || inputs.install-dependencies == 'true' }}
+  - name: Cache dependencies
+    uses: actions/cache@v4
+    with:
+      path: ${{ inputs.working-directory }}/.upkg
+      key: upkg-${{ steps.install.outputs.version }}-dependencies
+    if: ${{ inputs.install-dependencies == '' || inputs.install-dependencies == 'true' }}
