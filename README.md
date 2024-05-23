@@ -18,6 +18,14 @@ jobs:
     - uses: orbit-online/upkg-install@v1
 ```
 
+### Behavior
+
+If μpkg is already installed to `install-prefix` μpkg installation will be
+skipped even if there is a version mismatch, the installed `version` will
+however still be available in `outputs`.
+
+Installed dependencies are cached and refreshed.
+
 ### Inputs
 
 | Name                   | Description                                                                                                                                | Default        |

@@ -35,10 +35,11 @@ runs:
         INSTALL_PREFIX=$HOME/.local
         [[ $EUID != 0 ]] || INSTALL_PREFIX=/usr/local
       fi
-      wget -qO- https://github.com/orbit-online/upkg/releases/${{ inputs.version != 'latest' && 'download/' || '' }}${{ inputs.version }}/${{ inputs.version == 'latest' && 'download/' || '' }}upkg-install.tar.gz | \
-        tar -xzC "$INSTALL_PREFIX"
       printf "install-prefix=%s\n" "$INSTALL_PREFIX" >> $GITHUB_OUTPUT
-      VERSION=$($INSTALL_PREFIX/bin/upkg list -g -- -J | jq -r '.packages[] | select(.name=="upkg") | .version')
+      [[ ! -e $INSTALL_PREFIX/bin/upkg ]] || VERSION=$($INSTALL_PREFIX/bin/upkg list -g -- -J | jq -r '.packages[] | select(.name=="upkg") | .version')
+      [[ -n $VERSION ]] || wget -qO- \
+        https://github.com/orbit-online/upkg/releases/${{ inputs.version != 'latest' && 'download/' || '' }}${{ inputs.version }}/${{ inputs.version == 'latest' && 'download/' || '' }}upkg-install.tar.gz | \
+          tar -xzC "$INSTALL_PREFIX"
       printf "version=%s\n" "$VERSION" >> $GITHUB_OUTPUT
     env:
       INSTALL_PREFIX: ${{ inputs.install-prefix }}
