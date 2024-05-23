@@ -11,7 +11,7 @@ inputs:
     required: false
   install-dependencies:
     description: Whether to install dependencies in the current working-directory
-    default: 'true'
+    default: ''
     required: false
   working-directory:
     description: "The working directory to change to before installing dependencies"
@@ -45,6 +45,8 @@ runs:
   - name: Install dependencies
     shell: bash
     run: >
-      [[ ! -e upkg.json ]] || ${{ steps.install.outputs.install-prefix }}/bin/upkg install
+      if [[ "${{ inputs.install-dependencies }}" = true || -e upkg.json ]]; then
+        ${{ steps.install.outputs.install-prefix }}/bin/upkg install
+      fi
     working-directory: ${{ inputs.working-directory }}
-    if: ${{ inputs.install-dependencies == 'true' }}
+    if: ${{ inputs.install-dependencies == '' || inputs.install-dependencies == 'true' }}
