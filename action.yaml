@@ -44,6 +44,16 @@ runs:
       printf "version=%s\n" "$VERSION" >> $GITHUB_OUTPUT
     env:
       INSTALL_PREFIX: ${{ inputs.install-prefix }}
+  - name: Get working directory realpath
+    id: pwd
+    shell: bash
+    run: printf "pwd=%s\n" "$(realpath "${{ inputs.working-directory }}")" >> $GITHUB_OUTPUT
+  - name: Cache dependencies
+    uses: actions/cache@v4
+    with:
+      path: ${{ inputs.working-directory }}/.upkg
+      key: upkg-deps-${{ steps.pwd.outputs.pwd }}
+    if: ${{ inputs.install-dependencies == '' || inputs.install-dependencies == 'true' }}
   - name: Install dependencies
     shell: bash
     run: >
@@ -51,10 +61,4 @@ runs:
         ${{ steps.install.outputs.install-prefix }}/bin/upkg install
       fi
     working-directory: ${{ inputs.working-directory }}
-    if: ${{ inputs.install-dependencies == '' || inputs.install-dependencies == 'true' }}
-  - name: Cache dependencies
-    uses: actions/cache@v4
-    with:
-      path: ${{ inputs.working-directory }}/.upkg
-      key: upkg-${{ steps.install.outputs.version }}-dependencies
     if: ${{ inputs.install-dependencies == '' || inputs.install-dependencies == 'true' }}
