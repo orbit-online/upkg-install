@@ -36,6 +36,7 @@ runs:
         [[ $EUID != 0 ]] || export INSTALL_PREFIX=/usr/local
       fi
       printf "install-prefix=%s\n" "$INSTALL_PREFIX" >> $GITHUB_OUTPUT
+      VERSION=
       [[ ! -e $INSTALL_PREFIX/bin/upkg ]] || VERSION=$($INSTALL_PREFIX/bin/upkg list -g -- -J | jq -r '.packages[] | select(.name=="upkg") | .version')
       [[ -n $VERSION ]] || wget -qO- \
         https://github.com/orbit-online/upkg/releases/${{ inputs.version != 'latest' && 'download/' || '' }}${{ inputs.version }}/${{ inputs.version == 'latest' && 'download/' || '' }}upkg-install.tar.gz | \
