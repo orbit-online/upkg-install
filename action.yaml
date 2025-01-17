@@ -35,6 +35,7 @@ runs:
         export INSTALL_PREFIX=$HOME/.local
         [[ $EUID != 0 ]] || export INSTALL_PREFIX=/usr/local
       fi
+      mkdir -p "$INSTALL_PREFIX"
       printf "install-prefix=%s\n" "$INSTALL_PREFIX" >> $GITHUB_OUTPUT
       VERSION=
       [[ ! -e $INSTALL_PREFIX/bin/upkg ]] || VERSION=$($INSTALL_PREFIX/bin/upkg list -g -- -J | jq -r '.packages[] | select(.name=="upkg") | .version')
