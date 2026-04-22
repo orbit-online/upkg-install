@@ -35,15 +35,17 @@ runs:
         export INSTALL_PREFIX=$HOME/.local
         [[ $EUID != 0 ]] || export INSTALL_PREFIX=/usr/local
       fi
+      function getversion() {
+        { "$INSTALL_PREFIX/bin/upkg" list -gJ 2>/dev/null || "$INSTALL_PREFIX/bin/upkg" list -g -- -J; } | jq -r '.Packages[] | select(.name=="upkg") | .version'
+      }
       mkdir -p "$INSTALL_PREFIX"
       printf "install-prefix=%s\n" "$INSTALL_PREFIX" >> $GITHUB_OUTPUT
       VERSION=
-      [[ ! -e $INSTALL_PREFIX/bin/upkg ]] || VERSION=$($INSTALL_PREFIX/bin/upkg list -g -- -J | jq -r '.packages[] | select(.name=="upkg") | .version')
+      [[ ! -e $INSTALL_PREFIX/bin/upkg ]] || VERSION=$(getversion)
       [[ -n $VERSION ]] || wget -qO- \
         https://github.com/orbit-online/upkg/releases/${{ inputs.version != 'latest' && 'download/' || '' }}${{ inputs.version }}/${{ inputs.version == 'latest' && 'download/' || '' }}upkg-install.tar.gz | \
           tar -xzC "$INSTALL_PREFIX"
-      VERSION=$($INSTALL_PREFIX/bin/upkg list -g -- -J | jq -r '.packages[] | select(.name=="git-release") | .version')
-      printf "version=%s\n" "$VERSION" >> $GITHUB_OUTPUT
+      printf "version=%s\n" "$(getversion)" >> $GITHUB_OUTPUT
     env:
       INSTALL_PREFIX: ${{ inputs.install-prefix }}
   - name: Get working directory realpath
