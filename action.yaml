@@ -53,7 +53,7 @@ runs:
     shell: bash
     run: printf "pwd=%s\n" "$(realpath "${{ inputs.working-directory }}")" >> $GITHUB_OUTPUT
   - name: Cache dependencies
-    uses: actions/cache@v4
+    uses: actions/cache@v6
     with:
       path: ${{ inputs.working-directory }}/.upkg
       key: upkg-deps-${{ steps.pwd.outputs.pwd }}
